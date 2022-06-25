@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import com.rewtio.tugasku.Status
 import com.rewtio.tugasku.TugasData
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TugasCard(tugas: TugasData) {
     Card(
