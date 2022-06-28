@@ -12,7 +12,7 @@ class MainViewModel : ViewModel() {
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
 
-//  list tugas
+    //  list tugas
     private val _listTugas = MutableStateFlow<List<TugasData>>(emptyList())
     val listTugas = _listTugas.asStateFlow()
 
@@ -31,5 +31,4 @@ class MainViewModel : ViewModel() {
             })
         }
     }
-
 }
