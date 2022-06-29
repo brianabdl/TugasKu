@@ -6,11 +6,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.rewtio.tugasku.ui.theme.orInLightTheme
 
 @Composable
 fun SettingsItem(
@@ -39,14 +36,12 @@ fun SettingsItem(
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    title,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color.White orInLightTheme Color.Black
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium
                 )
                 Text(
                     text = description,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.White orInLightTheme Color.Black
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
             if (items != null) {

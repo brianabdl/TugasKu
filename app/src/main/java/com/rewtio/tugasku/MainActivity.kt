@@ -6,16 +6,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -24,26 +27,28 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.rewtio.tugasku.preferences.ThemeMode
 import com.rewtio.tugasku.ui.TambahTugasDialog
 import com.rewtio.tugasku.ui.TugasCard
 import com.rewtio.tugasku.ui.theme.TugasKuTheme
 import com.rewtio.tugasku.ui.viewmodel.MainViewModel
-import com.rewtio.tugasku.preferences.ThemeMode
-import com.rewtio.tugasku.ui.theme.titleHeadColor
 import com.rewtio.tugasku.ui.viewmodel.ThemeViewModel
+import kotlinx.coroutines.delay
 
-val Context.dataStore by preferencesDataStore(name = "settings")
+val Context.dataStore by preferencesDataStore(name = "${BuildConfig.APPLICATION_ID}_preferences")
 
 class MainActivity : ComponentActivity() {
-    private val vm: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             val context = LocalContext.current
+            val vm: MainViewModel = viewModel()
+            val coroutineScope = rememberCoroutineScope()
             val appSettings = remember {
                 ThemeViewModel(context.dataStore)
             }
@@ -70,7 +75,6 @@ class MainActivity : ComponentActivity() {
                             title = {
                                 Text(
                                     text = stringResource(id = R.string.app_name),
-                                    color = MaterialTheme.colorScheme.primary,
                                     style = TextStyle(
                                         fontFamily = FontFamily.Default,
                                         fontWeight = FontWeight.Bold,
@@ -101,19 +105,37 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ) { pad ->
-                    val isRefreshing by vm.isRefreshing.collectAsState(initial = false)
+                    var isRefreshing by remember { vm.isRefreshing }
+                    val listTugas = remember { vm.listTugas }
+
+                    LaunchedEffect(isRefreshing) {
+                        if (isRefreshing) {
+                            delay(1000)
+                            vm.onRefresh()
+                            isRefreshing = false
+                        }
+                    }
 
                     SwipeRefresh(
+                        swipeEnabled = true,
                         state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(pad),
-                        onRefresh = { vm.onRefresh() }
+                        onRefresh = {
+                            isRefreshing = true
+                        }
                     ) {
-                        Column {
-                            val list = vm.listTugas.collectAsState(initial = emptyList())
-                            list.value.forEach {
-                                TugasCard(it)
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            listTugas.forEach { tugasData ->
+                                TugasCard(tugasData,
+                                    onDelete = { vm.deleteTugas(it) },
+                                    onEdit = { vm.editTugas(it) }
+                                )
                             }
                         }
                     }

@@ -8,10 +8,14 @@ enum class Status {
 }
 
 data class TugasData(
-    val status: Status,
-    val judul: String,
-    val mapel: String,
-    val deskripsi: String,
-    val dibuat: String,
-    val deadline: String,
-)
+    var status: Status,
+    var judul: String,
+    var mapel: String,
+    var deskripsi: String,
+    var dibuat: String,
+    var deadline: String,
+) {
+    fun isMatch(other: TugasData): Boolean {
+        return this.status == status && this.judul == other.judul && this.mapel == other.mapel && this.deskripsi == other.deskripsi && this.dibuat == other.dibuat && this.deadline == other.deadline
+    }
+}

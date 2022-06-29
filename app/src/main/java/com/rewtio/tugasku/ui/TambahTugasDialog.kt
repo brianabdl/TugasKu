@@ -4,6 +4,9 @@ import android.app.DatePickerDialog
 import android.widget.DatePicker
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddTask
+import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,6 +18,7 @@ import com.rewtio.tugasku.Status
 import com.rewtio.tugasku.TugasData
 import java.util.*
 
+
 @Composable
 fun TambahTugasDialog(
     onAddTugas: (TugasData) -> Unit,
@@ -25,21 +29,17 @@ fun TambahTugasDialog(
     var deskripsi by remember { mutableStateOf("") }
     var deadline by remember { mutableStateOf("") }
 
-    val year: Int
-    val month: Int
-    val day: Int
-
     val calendar = Calendar.getInstance()
-    year = calendar.get(Calendar.YEAR)
-    month = calendar.get(Calendar.MONTH)
-    day = calendar.get(Calendar.DAY_OF_MONTH)
+    val yeari = calendar.get(Calendar.YEAR)
+    val monthi = calendar.get(Calendar.MONTH)
+    val dayi = calendar.get(Calendar.DAY_OF_MONTH)
     calendar.time = Date()
 
     val datePickerDialog = DatePickerDialog(
         LocalContext.current,
         { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
             deadline = "$dayOfMonth/$month/$year"
-        }, year, month, day
+        }, yeari, monthi, dayi
     )
 
     AlertDialog(
@@ -71,7 +71,7 @@ fun TambahTugasDialog(
                     onValueChange = { deskripsi = it })
 
                 Text(
-                    text = "Deadline: ${deadline}",
+                    text = "Deadline: $deadline",
                     modifier = Modifier.padding(top = 8.dp),
                 )
 
@@ -89,17 +89,17 @@ fun TambahTugasDialog(
             Button(
                 onClick = {
                     val data = TugasData(
-                        status = Status.COMPLETED,
+                        status = Status.TODO,
                         judul = judul,
                         deskripsi = deskripsi,
                         deadline = deadline,
-                        dibuat = "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH)}/${calendar.get(Calendar.YEAR)}",
-                        mapel = "Matematika"
+                        dibuat = "$dayi/$monthi/$yeari",
+                        mapel = mapel
                     )
                     onAddTugas(data)
                     onDismissRequest()
                 }) {
-                Text("Tambah Tugas")
+                Icon(Icons.Filled.AddTask, "Add Task")
             }
         },
         dismissButton = {
@@ -107,7 +107,7 @@ fun TambahTugasDialog(
                 onClick = {
                     onDismissRequest()
                 }) {
-                Text("Cancel")
+                Icon(Icons.Filled.Cancel, "Add Task")
             }
         }
     )

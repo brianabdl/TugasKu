@@ -4,7 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,7 +17,7 @@ import com.rewtio.tugasku.Status
 import com.rewtio.tugasku.TugasData
 
 @Composable
-fun TugasCard(tugas: TugasData) {
+fun TugasCard(tugas: TugasData, onDelete: (TugasData) -> Unit, onEdit: (TugasData) -> Unit) {
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(8.dp),
@@ -38,27 +38,32 @@ fun TugasCard(tugas: TugasData) {
                     textAlign = TextAlign.Start,
                     style = MaterialTheme.typography.headlineSmall,
                 )
+
+                val itemMenu = listOf("Edit", "Delete")
+                var expandMenu by remember { mutableStateOf(false) }
+
                 Box(
                     contentAlignment = Alignment.CenterEnd,
                 ) {
-                    val items = listOf("Selesai", "Sedang Dikerjakan", "Belum Selesai")
-                    var expanded by remember { mutableStateOf(false) }
-
                     Icon(
-                        imageVector = Icons.Filled.Edit,
-                        contentDescription = "",
-                        tint = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.padding(8.dp).clickable { expanded = true },
+                        Icons.Filled.MoreVert,
+                        modifier = Modifier.clickable { expandMenu = !expandMenu },
+                        contentDescription = "Edit Menu"
                     )
+
                     DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
+                        expanded = expandMenu,
+                        onDismissRequest = { expandMenu = false }
                     ) {
-                        items.forEach {
+                        itemMenu.forEach {
                             DropdownMenuItem(
                                 text = { Text(it) },
                                 onClick = {
-                                    expanded = false
+                                    when (it) {
+                                        "Edit" -> onEdit(tugas)
+                                        "Delete" -> onDelete(tugas)
+                                    }
+                                    expandMenu = false
                                 })
                         }
                     }
@@ -94,5 +99,5 @@ fun TugasCardPreview() {
         deadline = "20/10/2020",
         dibuat = "10/10/2020",
         mapel = "Matematika")
-    TugasCard(data)
+    TugasCard(data, {}, {})
 }
