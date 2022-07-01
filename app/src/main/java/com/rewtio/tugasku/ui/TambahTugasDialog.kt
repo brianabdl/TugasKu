@@ -4,6 +4,8 @@ import android.app.DatePickerDialog
 import android.widget.DatePicker
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddTask
 import androidx.compose.material.icons.filled.Cancel
@@ -18,11 +20,11 @@ import com.rewtio.tugasku.Status
 import com.rewtio.tugasku.TugasData
 import java.util.*
 
-
 @Composable
-fun TambahTugasDialog(
-    onAddTugas: (TugasData) -> Unit,
-    onDismissRequest: () -> Unit,
+fun TugasDialog(
+    tugasData: TugasData? = null,
+    onSave: (TugasData) -> Unit,
+    onDismiss: () -> Unit,
 ) {
     var judul by remember { mutableStateOf("") }
     var mapel by remember { mutableStateOf("") }
@@ -35,6 +37,16 @@ fun TambahTugasDialog(
     val dayi = calendar.get(Calendar.DAY_OF_MONTH)
     calendar.time = Date()
 
+    if (tugasData != null) {
+        judul = tugasData.judul
+        mapel = tugasData.mapel
+        deskripsi = tugasData.deskripsi
+        deadline = tugasData.deadline
+//        DateFormat.getDateInstance().parse(tugasData.deadline)?.let {
+//            calendar.time = it
+//        }
+    }
+
     val datePickerDialog = DatePickerDialog(
         LocalContext.current,
         { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
@@ -44,13 +56,15 @@ fun TambahTugasDialog(
 
     AlertDialog(
         onDismissRequest = {
-            onDismissRequest()
+            onDismiss()
         },
         title = {
-            Text(text = "Isi Detail Tugas")
+            Text(text = "Detail Tugas")
         },
         text = {
-            Column {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState())
+            ) {
                 TextField(
                     label = { Text("Judul") },
                     singleLine = true,
@@ -77,9 +91,7 @@ fun TambahTugasDialog(
 
                 Button(
                     modifier = Modifier.align(Alignment.End),
-                    onClick = {
-                        datePickerDialog.show()
-                    }
+                    onClick = { datePickerDialog.show() }
                 ) {
                     Text(text = "Pilih Tanggal")
                 }
@@ -88,29 +100,46 @@ fun TambahTugasDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    val data = TugasData(
-                        status = Status.TODO,
-                        judul = judul,
-                        deskripsi = deskripsi,
-                        deadline = deadline,
-                        dibuat = "$dayi/$monthi/$yeari",
-                        mapel = mapel
-                    )
-                    onAddTugas(data)
-                    onDismissRequest()
+                    val data = if (tugasData != null) {
+                        tugasData.status = Status.TODO
+                        tugasData.judul = judul
+                        tugasData.deskripsi = deskripsi
+                        tugasData.deadline = deadline
+                        tugasData.dibuat = "$dayi/$monthi/$yeari"
+                        tugasData.mapel = mapel
+                        tugasData
+                    } else TugasData(
+                            status = Status.TODO,
+                            judul = judul,
+                            deskripsi = deskripsi,
+                            deadline = deadline,
+                            dibuat = "$dayi/$monthi/$yeari",
+                            mapel = mapel
+                        )
+
+                    onSave(data)
+                    onDismiss()
                 }) {
                 Icon(Icons.Filled.AddTask, "Add Task")
             }
         },
         dismissButton = {
             Button(
-                onClick = {
-                    onDismissRequest()
-                }) {
+                onClick = { onDismiss() }) {
                 Icon(Icons.Filled.Cancel, "Add Task")
             }
         }
     )
+}
+
+@Composable
+fun EditTugasDialog(tugasData: TugasData, onSave: (TugasData) -> Unit, onDismiss: () -> Unit) {
+    TugasDialog(tugasData, onSave, onDismiss)
+}
+
+@Composable
+fun TambahTugasDialog(onAddTugas: (TugasData) -> Unit, onDismissRequest: () -> Unit) {
+    TugasDialog(onSave = onAddTugas, onDismiss = onDismissRequest)
 }
 
 @Preview

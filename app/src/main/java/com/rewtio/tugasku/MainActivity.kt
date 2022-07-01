@@ -5,15 +5,13 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
-import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
@@ -31,6 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.rewtio.tugasku.preferences.ThemeMode
+import com.rewtio.tugasku.ui.EditTugasDialog
 import com.rewtio.tugasku.ui.TambahTugasDialog
 import com.rewtio.tugasku.ui.TugasCard
 import com.rewtio.tugasku.ui.theme.TugasKuTheme
@@ -48,7 +47,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             val context = LocalContext.current
             val vm: MainViewModel = viewModel()
-            val coroutineScope = rememberCoroutineScope()
             val appSettings = remember {
                 ThemeViewModel(context.dataStore)
             }
@@ -61,17 +59,29 @@ class MainActivity : ComponentActivity() {
                     else -> isSystemInDarkTheme()
                 },
             ) {
-                var openDialog by remember { mutableStateOf(false) }
-                if (openDialog) {
+                var openTambahDialog by remember { mutableStateOf(false) }
+                if (openTambahDialog) {
                     TambahTugasDialog(
                         onAddTugas = { vm.addTugas(it) },
-                        onDismissRequest = { openDialog = false })
+                        onDismissRequest = { openTambahDialog = false })
+                }
+
+                var openEditDialog by remember { mutableStateOf(false) }
+                var curTugasData by remember {
+                    mutableStateOf(TugasData(Status.TODO, "", "", "", "", ""))
+                }
+
+                if (openEditDialog) {
+                    EditTugasDialog(
+                        curTugasData,
+                        onSave = { vm.editTugas(it) },
+                        onDismiss = { openEditDialog = false })
                 }
 
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
-                        SmallTopAppBar(
+                        TopAppBar(
                             title = {
                                 Text(
                                     text = stringResource(id = R.string.app_name),
@@ -99,7 +109,7 @@ class MainActivity : ComponentActivity() {
                     },
                     floatingActionButton = {
                         FloatingActionButton(
-                            onClick = { openDialog = true }
+                            onClick = { openTambahDialog = true }
                         ) {
                             Icon(Icons.Filled.Add, "Tambah Tugas")
                         }
@@ -134,7 +144,10 @@ class MainActivity : ComponentActivity() {
                             listTugas.forEach { tugasData ->
                                 TugasCard(tugasData,
                                     onDelete = { vm.deleteTugas(it) },
-                                    onEdit = { vm.editTugas(it) }
+                                    onEdit = {
+                                        curTugasData = tugasData
+                                        openEditDialog = true
+                                    }
                                 )
                             }
                         }
