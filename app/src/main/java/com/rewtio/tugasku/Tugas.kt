@@ -8,6 +8,7 @@ enum class Status {
 }
 
 data class TugasData(
+    val id: Int,
     var status: Status,
     var judul: String,
     var mapel: String,

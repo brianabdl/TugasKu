@@ -109,13 +109,14 @@ fun TugasDialog(
                         tugasData.mapel = mapel
                         tugasData
                     } else TugasData(
-                            status = Status.TODO,
-                            judul = judul,
-                            deskripsi = deskripsi,
-                            deadline = deadline,
-                            dibuat = "$dayi/$monthi/$yeari",
-                            mapel = mapel
-                        )
+                        id = Random().nextInt().unaryPlus(),
+                        status = Status.TODO,
+                        judul = judul,
+                        deskripsi = deskripsi,
+                        deadline = deadline,
+                        dibuat = "$dayi/$monthi/$yeari",
+                        mapel = mapel
+                    )
 
                     onSave(data)
                     onDismiss()

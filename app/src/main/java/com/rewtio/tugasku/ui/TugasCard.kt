@@ -93,6 +93,7 @@ fun TugasCard(tugas: TugasData, onDelete: (TugasData) -> Unit, onEdit: (TugasDat
 @Composable
 fun TugasCardPreview() {
     val data = TugasData(
+        -1,
         status = Status.COMPLETED,
         judul = "Membuat Kerangka Bangunan",
         deskripsi = "Tugas untuk menghitung luas lingkaran",

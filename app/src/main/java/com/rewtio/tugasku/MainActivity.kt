@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
 
                 var openEditDialog by remember { mutableStateOf(false) }
                 var curTugasData by remember {
-                    mutableStateOf(TugasData(Status.TODO, "", "", "", "", ""))
+                    mutableStateOf(TugasData(-1, Status.TODO, "", "", "", "", ""))
                 }
 
                 if (openEditDialog) {
