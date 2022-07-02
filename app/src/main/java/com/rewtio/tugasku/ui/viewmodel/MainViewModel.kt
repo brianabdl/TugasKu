@@ -25,24 +25,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     //List Tugas State
     val listTugas = mutableStateListOf<TugasData>()
 
+    private val preferences = getApplication<Application>().dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+
     fun onRefresh() {
         viewModelScope.launch {
-            try {
-                getApplication<Application>().dataStore.data
-                    .catch { exception ->
-                        if (exception is IOException) {
-                            emit(emptyPreferences())
-                        } else {
-                            throw exception
-                        }
-                    }.first().let { preferences ->
+            preferences.first().let { preferences ->
                     preferences[TugasPref.KEY_LIST_TUGAS]?.forEach { id ->
                         preferences[stringSetPreferencesKey("tugas_$id")]?.let { tugasStr ->
                             val list = tugasStr.toList()
 
                             val tugasData = TugasData(
-                                id.toInt(),
-                                Status.valueOf(list[0]),
+                                id.toInt(), Status.valueOf(list[0]),
                                 list[1], list[2], list[3], list[4], list[5]
                             )
 
@@ -52,11 +52,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         }
                     }
                 }
-            }catch (e: IOException){
-                Log.e("MainViewModel", e.message ?: "")
-            } catch (e: Exception) {
-                Log.e("MainViewModel", e.message ?: "")
-            }
         }
     }
 
@@ -67,27 +62,43 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 getApplication<Application>().dataStore.edit { preferences ->
                     preferences[TugasPref.KEY_LIST_TUGAS] = listTugas.map { it.id.toString() }.toSet()
                     preferences[stringSetPreferencesKey("tugas_${tugas.id}")] = setOf(
-                        tugas.status.name,
-                        tugas.judul,
-                        tugas.mapel,
-                        tugas.deskripsi,
-                        tugas.dibuat,
-                        tugas.deadline
+                        tugas.status.name, tugas.judul,
+                        tugas.mapel, tugas.deskripsi,
+                        tugas.dibuat, tugas.deadline
                     )
                 }
             } catch (e: IOException) {
-                // Handle error writing preferences to disk
                 Log.i("MainViewModel", "Error: ${e.message}")
             } catch (e: Exception) {
-                // Handle error thrown while executing transform block
                 Log.i("MainViewModel", "Error: ${e.message}")
             }
         }
     }
 
     fun editTugas(tugas: TugasData) {
-        listTugas.remove(tugas)
-        listTugas.add(tugas)
+        listTugas.find { it.id == tugas.id }?.let {
+            it.status = tugas.status
+            it.judul = tugas.judul
+            it.mapel = tugas.mapel
+            it.deskripsi = tugas.deskripsi
+            it.dibuat = tugas.dibuat
+            it.deadline = tugas.deadline
+        }
+        viewModelScope.launch {
+            try {
+                getApplication<Application>().dataStore.edit { preferences ->
+                    preferences[stringSetPreferencesKey("tugas_${tugas.id}")] = setOf(
+                        tugas.status.name, tugas.judul,
+                        tugas.mapel, tugas.deskripsi,
+                        tugas.dibuat, tugas.deadline
+                    )
+                }
+            } catch (e: IOException) {
+                Log.i("MainViewModel", "Error: ${e.message}")
+            } catch (e: Exception) {
+                Log.i("MainViewModel", "Error: ${e.message}")
+            }
+        }
     }
 
     fun deleteTugas(tugas: TugasData) {
