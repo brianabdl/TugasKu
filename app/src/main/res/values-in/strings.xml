@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="select_date">Pilih Tanggal</string>
+    <string name="language">Bahasa</string>
+    <string name="help_translate">Bantu Kami Terjemahkan</string>
+    <string name="update">Pembaruan</string>
+    <string name="option_update">Tipe Pembaruan</string>
+    <string name="settings">Pengaturan</string>
+    <string name="theme">Tema</string>
+    <string name="theme_mode">Mode Tema</string>
+</resources>

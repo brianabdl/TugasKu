@@ -16,7 +16,9 @@ fun SettingsItem(
     description: String,
     items: List<String>? = null,
     onItemClick: (Int) -> Unit = {}) {
+
     var expanded by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -53,8 +55,8 @@ fun SettingsItem(
                         DropdownMenuItem(
                             text = { Text(s) },
                             onClick = {
-                                onItemClick(index)
                                 expanded = false
+                                onItemClick(index)
                             }
                         )
                     }

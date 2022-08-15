@@ -16,6 +16,7 @@ data class TugasData(
     var dibuat: String,
     var deadline: String,
 ) {
+    constructor() : this(-1, Status.TODO, "", "", "", "", "")
     fun isMatch(other: TugasData): Boolean {
         return this.status == status && this.judul == other.judul && this.mapel == other.mapel && this.deskripsi == other.deskripsi && this.dibuat == other.dibuat && this.deadline == other.deadline
     }

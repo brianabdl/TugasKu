@@ -1,6 +1,5 @@
 package com.rewtio.tugasku.ui
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -18,8 +17,17 @@ import com.rewtio.tugasku.TugasData
 
 @Composable
 fun TugasCard(tugas: TugasData, onDelete: (TugasData) -> Unit, onEdit: (TugasData) -> Unit) {
+//    val borderColor = remember {
+//        if (tugas.status == Status.COMPLETED) {
+//            Color.Green
+//        } else {
+//            Color.hsv(0F, 1F, 0.5F)
+//        }
+//    }
+
     Card(
         shape = RoundedCornerShape(8.dp),
+//        border = BorderStroke(2.dp, borderColor),
         elevation = CardDefaults.cardElevation(8.dp),
         modifier = Modifier
             .fillMaxWidth()
@@ -45,26 +53,28 @@ fun TugasCard(tugas: TugasData, onDelete: (TugasData) -> Unit, onEdit: (TugasDat
                 Box(
                     contentAlignment = Alignment.CenterEnd,
                 ) {
-                    Icon(
-                        Icons.Filled.MoreVert,
-                        modifier = Modifier.clickable { expandMenu = !expandMenu },
-                        contentDescription = "Edit Menu"
-                    )
+                    IconButton(onClick = { expandMenu = !expandMenu  }) {
+                        Icon(
+                            Icons.Filled.MoreVert,
+                            contentDescription = "Edit Menu"
+                        )
+                    }
 
                     DropdownMenu(
                         expanded = expandMenu,
                         onDismissRequest = { expandMenu = false }
                     ) {
-                        itemMenu.forEach {
+                        itemMenu.forEachIndexed { index, str ->
                             DropdownMenuItem(
-                                text = { Text(it) },
+                                text = { Text(str) },
                                 onClick = {
-                                    when (it) {
-                                        "Edit" -> onEdit(tugas)
-                                        "Delete" -> onDelete(tugas)
+                                    when (index) {
+                                        0 -> onEdit(tugas)
+                                        1 -> onDelete(tugas)
                                     }
                                     expandMenu = false
-                                })
+                                }
+                            )
                         }
                     }
                 }
@@ -82,7 +92,7 @@ fun TugasCard(tugas: TugasData, onDelete: (TugasData) -> Unit, onEdit: (TugasDat
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
-                text = "Deskripsi : ${tugas.deskripsi}",
+                text = "Rincian : ${tugas.deskripsi}",
                 style = MaterialTheme.typography.bodySmall
             )
         }

@@ -5,13 +5,12 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
@@ -20,22 +19,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.rewtio.tugasku.preferences.ThemeMode
+import com.rewtio.tugasku.preferences.AppSettings
 import com.rewtio.tugasku.ui.EditTugasDialog
 import com.rewtio.tugasku.ui.TambahTugasDialog
 import com.rewtio.tugasku.ui.TugasCard
 import com.rewtio.tugasku.ui.theme.TugasKuTheme
 import com.rewtio.tugasku.ui.viewmodel.MainViewModel
-import com.rewtio.tugasku.ui.viewmodel.ThemeViewModel
-import kotlinx.coroutines.delay
+import com.rewtio.tugasku.utils.LocaleUtils
 
 val Context.dataStore by preferencesDataStore(name = "${BuildConfig.APPLICATION_ID}_preferences")
 
@@ -43,35 +38,29 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        lifecycleScope.launchWhenCreated {
+            AppSettings.instance.fetchSettings(this@MainActivity)
+        }
 
         setContent {
             val context = LocalContext.current
             val vm: MainViewModel = viewModel()
-            val appSettings = remember {
-                ThemeViewModel(context.dataStore)
-            }
-            val theme by appSettings.themeMode.collectAsState(initial = ThemeMode.AUTO)
 
-            TugasKuTheme(
-                darkTheme = when (theme) {
-                    ThemeMode.DARK -> true
-                    ThemeMode.LIGHT -> false
-                    else -> isSystemInDarkTheme()
-                },
-            ) {
+            TugasKuTheme {
+                val language by AppSettings.instance.localeState.collectAsState()
+                LocaleUtils.SetLanguage(language)
+
                 var openTambahDialog by remember { mutableStateOf(false) }
-                if (openTambahDialog) {
+                var openEditDialog by remember { mutableStateOf(false) }
+                var curTugasData by remember { mutableStateOf(TugasData()) }
+
+                AnimatedVisibility(visible = openTambahDialog) {
                     TambahTugasDialog(
                         onAddTugas = { vm.addTugas(it) },
                         onDismissRequest = { openTambahDialog = false })
                 }
 
-                var openEditDialog by remember { mutableStateOf(false) }
-                var curTugasData by remember {
-                    mutableStateOf(TugasData(-1, Status.TODO, "", "", "", "", ""))
-                }
-
-                if (openEditDialog) {
+                AnimatedVisibility(visible = openEditDialog) {
                     EditTugasDialog(
                         curTugasData,
                         onSave = { vm.editTugas(it) },
@@ -81,16 +70,9 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
-                        TopAppBar(
+                        SmallTopAppBar(
                             title = {
-                                Text(
-                                    text = stringResource(id = R.string.app_name),
-                                    style = TextStyle(
-                                        fontFamily = FontFamily.Default,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 24.sp
-                                    )
-                                )
+                                Text(text = stringResource(R.string.app_name))
                             },
                             actions = {
                                 IconButton(
@@ -115,25 +97,15 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ) { pad ->
-                    var isRefreshing by remember { vm.isRefreshing }
+                    val isRefreshing by vm.isRefreshing.collectAsState()
                     val listTugas = remember { vm.listTugas }
-
-                    LaunchedEffect(isRefreshing) {
-                        if (isRefreshing) {
-                            delay(1000)
-                            vm.onRefresh()
-                            isRefreshing = false
-                        }
-                    }
 
                     SwipeRefresh(
                         swipeEnabled = true,
                         state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(pad),
+                        modifier = Modifier.fillMaxSize().padding(pad),
                         onRefresh = {
-                            isRefreshing = true
+                            vm.refresh()
                         }
                     ) {
                         Column(

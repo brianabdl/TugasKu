@@ -1,9 +1,7 @@
 package com.rewtio.tugasku.ui.viewmodel
 
 import android.app.Application
-import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringSetPreferencesKey
@@ -13,16 +11,17 @@ import com.rewtio.tugasku.Status
 import com.rewtio.tugasku.TugasData
 import com.rewtio.tugasku.dataStore
 import com.rewtio.tugasku.preferences.TugasPref
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.IOException
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
-    //SwipeRefresh State
-    var isRefreshing = mutableStateOf(true)
 
-    //List Tugas State
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean>
+        get() = _isRefreshing.asStateFlow()
+
     val listTugas = mutableStateListOf<TugasData>()
 
     private val preferences = getApplication<Application>().dataStore.data
@@ -34,43 +33,47 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
 
-    fun onRefresh() {
+    init {
+        refresh()
+    }
+
+    fun refresh() {
         viewModelScope.launch {
+            _isRefreshing.emit(true)
+            delay(1000) // let animation run
+
             preferences.first().let { preferences ->
-                    preferences[TugasPref.KEY_LIST_TUGAS]?.forEach { id ->
-                        preferences[stringSetPreferencesKey("tugas_$id")]?.let { tugasStr ->
-                            val list = tugasStr.toList()
+                preferences[TugasPref.KEY_LIST_TUGAS]?.forEach { id ->
+                    preferences[stringSetPreferencesKey("tugas_$id")]?.let { tugasStr ->
+                        val list = tugasStr.toList()
 
-                            val tugasData = TugasData(
-                                id.toInt(), Status.valueOf(list[0]),
-                                list[1], list[2], list[3], list[4], list[5]
-                            )
+                        val tugasData = TugasData(
+                            id.toInt(), Status.valueOf(list[0]),
+                            list[1], list[2], list[3], list[4], list[5]
+                        )
 
-                            if (!listTugas.any { it.id == tugasData.id }) {
-                                listTugas.add(tugasData)
-                            }
+                        if (!listTugas.any { it.id == tugasData.id }) {
+                            listTugas.add(tugasData)
                         }
                     }
                 }
+            }
+
+            _isRefreshing.emit(false)
         }
     }
 
     fun addTugas(tugas: TugasData) {
         listTugas.add(tugas)
         viewModelScope.launch {
-            try {
-                getApplication<Application>().dataStore.edit { preferences ->
-                    preferences[TugasPref.KEY_LIST_TUGAS] = listTugas.map { it.id.toString() }.toSet()
-                    preferences[stringSetPreferencesKey("tugas_${tugas.id}")] = setOf(
-                        tugas.status.name, tugas.judul,
-                        tugas.mapel, tugas.deskripsi,
-                        tugas.dibuat, tugas.deadline
-                    )
-                }
-            } catch (e: IOException) {
-                Log.i("MainViewModel", "Error: ${e.message}")
-            } catch (e: Exception) {
-                Log.i("MainViewModel", "Error: ${e.message}")
+            getApplication<Application>().dataStore.edit { preferences ->
+                preferences[TugasPref.KEY_LIST_TUGAS] =
+                    listTugas.map { it.id.toString() }.toSet()
+                preferences[stringSetPreferencesKey("tugas_${tugas.id}")] = setOf(
+                    tugas.status.name, tugas.judul,
+                    tugas.mapel, tugas.deskripsi,
+                    tugas.dibuat, tugas.deadline
+                )
             }
         }
     }
@@ -85,18 +88,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             it.deadline = tugas.deadline
         }
         viewModelScope.launch {
-            try {
-                getApplication<Application>().dataStore.edit { preferences ->
-                    preferences[stringSetPreferencesKey("tugas_${tugas.id}")] = setOf(
-                        tugas.status.name, tugas.judul,
-                        tugas.mapel, tugas.deskripsi,
-                        tugas.dibuat, tugas.deadline
-                    )
-                }
-            } catch (e: IOException) {
-                Log.i("MainViewModel", "Error: ${e.message}")
-            } catch (e: Exception) {
-                Log.i("MainViewModel", "Error: ${e.message}")
+            getApplication<Application>().dataStore.edit { preferences ->
+                preferences[stringSetPreferencesKey("tugas_${tugas.id}")] = setOf(
+                    tugas.status.name, tugas.judul,
+                    tugas.mapel, tugas.deskripsi,
+                    tugas.dibuat, tugas.deadline
+                )
             }
         }
     }

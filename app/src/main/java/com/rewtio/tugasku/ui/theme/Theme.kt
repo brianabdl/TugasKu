@@ -6,10 +6,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
-import com.rewtio.tugasku.dataStore
+import com.rewtio.tugasku.preferences.AppSettings
 import com.rewtio.tugasku.preferences.ThemeMode
-import com.rewtio.tugasku.ui.viewmodel.ThemeViewModel
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -36,20 +34,16 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun TugasKuTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val context = LocalContext.current
-    val viewModel = remember { ThemeViewModel(context.dataStore) }
-    val theme by viewModel.themeMode.collectAsState(initial = ThemeMode.AUTO)
-    val value = when (theme){
+
+    val theme by AppSettings.instance.themeModeState.collectAsState()
+
+    val value = when (theme) {
         ThemeMode.DARK -> true
         ThemeMode.LIGHT -> false
         else -> isSystemInDarkTheme()
     }
-
     DarkThemeValue.current.value = value
 
     MaterialTheme(

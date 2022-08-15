@@ -42,9 +42,6 @@ fun TugasDialog(
         mapel = tugasData.mapel
         deskripsi = tugasData.deskripsi
         deadline = tugasData.deadline
-//        DateFormat.getDateInstance().parse(tugasData.deadline)?.let {
-//            calendar.time = it
-//        }
     }
 
     val datePickerDialog = DatePickerDialog(
@@ -65,20 +62,20 @@ fun TugasDialog(
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState())
             ) {
-                TextField(
+                OutlinedTextField(
                     label = { Text("Judul") },
                     singleLine = true,
                     value = judul,
                     onValueChange = { judul = it })
 
-                TextField(
+                OutlinedTextField(
                     label = { Text("Mapel") },
                     modifier = Modifier.padding(top = 8.dp),
                     singleLine = true,
                     value = mapel,
                     onValueChange = { mapel = it })
 
-                TextField(
+                OutlinedTextField(
                     label = { Text("Deskripsi") },
                     modifier = Modifier.padding(top = 8.dp),
                     value = deskripsi,
