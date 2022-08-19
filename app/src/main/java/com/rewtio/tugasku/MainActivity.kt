@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -54,13 +55,19 @@ class MainActivity : ComponentActivity() {
                 var openEditDialog by remember { mutableStateOf(false) }
                 var curTugasData by remember { mutableStateOf(TugasData()) }
 
-                AnimatedVisibility(visible = openTambahDialog) {
+                AnimatedVisibility(
+                    visible = openTambahDialog,
+                    exit = ExitTransition.None
+                ) {
                     TambahTugasDialog(
                         onAddTugas = { vm.addTugas(it) },
                         onDismissRequest = { openTambahDialog = false })
                 }
 
-                AnimatedVisibility(visible = openEditDialog) {
+                AnimatedVisibility(
+                    visible = openEditDialog,
+                    exit = ExitTransition.None
+                ) {
                     EditTugasDialog(
                         curTugasData,
                         onSave = { vm.editTugas(it) },
@@ -87,7 +94,8 @@ class MainActivity : ComponentActivity() {
                                 ) {
                                     Icon(Icons.Filled.Settings, "Settings")
                                 }
-                            })
+                            }
+                        )
                     },
                     floatingActionButton = {
                         FloatingActionButton(
@@ -103,7 +111,9 @@ class MainActivity : ComponentActivity() {
                     SwipeRefresh(
                         swipeEnabled = true,
                         state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
-                        modifier = Modifier.fillMaxSize().padding(pad),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(pad),
                         onRefresh = {
                             vm.refresh()
                         }

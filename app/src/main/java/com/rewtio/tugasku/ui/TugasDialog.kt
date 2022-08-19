@@ -95,30 +95,32 @@ fun TugasDialog(
             }
         },
         confirmButton = {
-            Button(
-                onClick = {
-                    val data = if (tugasData != null) {
-                        tugasData.status = Status.TODO
-                        tugasData.judul = judul
-                        tugasData.deskripsi = deskripsi
-                        tugasData.deadline = deadline
-                        tugasData.dibuat = "$dayi/$monthi/$yeari"
-                        tugasData.mapel = mapel
-                        tugasData
-                    } else TugasData(
-                        id = Random().nextInt().unaryPlus(),
-                        status = Status.TODO,
-                        judul = judul,
-                        deskripsi = deskripsi,
-                        deadline = deadline,
-                        dibuat = "$dayi/$monthi/$yeari",
-                        mapel = mapel
-                    )
+            if (judul.isNotBlank() && deskripsi.isNotBlank() && deadline.isNotBlank() && mapel.isNotBlank()) {
+                Button(
+                    onClick = {
+                        val data = if (tugasData != null) {
+                            tugasData.status = Status.TODO
+                            tugasData.judul = judul
+                            tugasData.deskripsi = deskripsi
+                            tugasData.deadline = deadline
+                            tugasData.dibuat = "$dayi/$monthi/$yeari"
+                            tugasData.mapel = mapel
+                            tugasData
+                        } else TugasData(
+                            id = Random().nextInt().unaryPlus(),
+                            status = Status.TODO,
+                            judul = judul,
+                            deskripsi = deskripsi,
+                            deadline = deadline,
+                            dibuat = "$dayi/$monthi/$yeari",
+                            mapel = mapel
+                        )
 
-                    onSave(data)
-                    onDismiss()
-                }) {
-                Icon(Icons.Filled.AddTask, "Add Task")
+                        onSave(data)
+                        onDismiss()
+                    }) {
+                    Icon(Icons.Filled.AddTask, "Add Task")
+                }
             }
         },
         dismissButton = {

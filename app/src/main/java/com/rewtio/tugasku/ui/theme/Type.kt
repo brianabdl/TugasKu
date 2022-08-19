@@ -10,9 +10,6 @@ import androidx.compose.ui.unit.sp
 
 // Set of Material typography styles to start with
 
-@Composable
-fun titleHeadColor() = Color.White orInLightTheme Color.Black
-
 val Typography = Typography(
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default,

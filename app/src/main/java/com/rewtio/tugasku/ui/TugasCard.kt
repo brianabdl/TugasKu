@@ -12,22 +12,18 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.rewtio.tugasku.Status
 import com.rewtio.tugasku.TugasData
 
 @Composable
 fun TugasCard(tugas: TugasData, onDelete: (TugasData) -> Unit, onEdit: (TugasData) -> Unit) {
-//    val borderColor = remember {
-//        if (tugas.status == Status.COMPLETED) {
-//            Color.Green
-//        } else {
-//            Color.hsv(0F, 1F, 0.5F)
-//        }
-//    }
+
+    val itemMenu = remember { listOf("Edit", "Delete") }
+    var expandMenu by remember { mutableStateOf(false) }
 
     Card(
         shape = RoundedCornerShape(8.dp),
-//        border = BorderStroke(2.dp, borderColor),
         elevation = CardDefaults.cardElevation(8.dp),
         modifier = Modifier
             .fillMaxWidth()
@@ -38,27 +34,18 @@ fun TugasCard(tugas: TugasData, onDelete: (TugasData) -> Unit, onEdit: (TugasDat
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-            ) {
+            ){
                 Text(
                     text = tugas.judul,
-                    fontFamily = FontFamily.Serif,
-                    modifier = Modifier.weight(1F),
-                    textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.align(Alignment.CenterVertically).weight(1F),
+                    fontSize = 24.sp,
                 )
 
-                val itemMenu = listOf("Edit", "Delete")
-                var expandMenu by remember { mutableStateOf(false) }
-
-                Box(
-                    contentAlignment = Alignment.CenterEnd,
-                ) {
-                    IconButton(onClick = { expandMenu = !expandMenu  }) {
-                        Icon(
-                            Icons.Filled.MoreVert,
-                            contentDescription = "Edit Menu"
-                        )
-                    }
+                IconButton(onClick = { expandMenu = !expandMenu }) {
+                    Icon(
+                        Icons.Filled.MoreVert,
+                        contentDescription = "Edit Menu"
+                    )
 
                     DropdownMenu(
                         expanded = expandMenu,
@@ -109,6 +96,7 @@ fun TugasCardPreview() {
         deskripsi = "Tugas untuk menghitung luas lingkaran",
         deadline = "20/10/2020",
         dibuat = "10/10/2020",
-        mapel = "Matematika")
+        mapel = "Matematika"
+    )
     TugasCard(data, {}, {})
 }
