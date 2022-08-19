@@ -12,7 +12,7 @@ android {
         minSdk 21
         targetSdk 32
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -20,28 +20,57 @@ android {
         }
     }
 
+
+    signingConfigs {
+        debug {
+            storeFile file("keystore.jks")
+            keyAlias "TugasKu"
+            storePassword "123456789"
+            keyPassword "123456789"
+        }
+
+        release {
+            storeFile file("keystore.jks")
+            keyAlias "TugasKu"
+            storePassword "123456789"
+            keyPassword "123456789"
+        }
+    }
+
     buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
         freeCompilerArgs += ["-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
                              "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
                              "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi"]
     }
+
     buildFeatures {
         compose true
     }
+
     composeOptions {
         kotlinCompilerExtensionVersion '1.1.1'
     }
+
     packagingOptions {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
