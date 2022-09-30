@@ -16,9 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rewtio.tugasku.Status
-import com.rewtio.tugasku.TugasData
+import com.rewtio.tugasku.database.Status
+import com.rewtio.tugasku.database.TugasData
 import java.util.*
+import kotlin.math.abs
 
 @Composable
 fun TugasDialog(
@@ -37,11 +38,11 @@ fun TugasDialog(
     val dayi = calendar.get(Calendar.DAY_OF_MONTH)
     calendar.time = Date()
 
-    if (tugasData != null) {
-        judul = tugasData.judul
-        mapel = tugasData.mapel
-        deskripsi = tugasData.deskripsi
-        deadline = tugasData.deadline
+    tugasData?.let {
+        judul = it.judul
+        mapel = it.mapel
+        deskripsi = it.deskripsi
+        deadline = it.deadline
     }
 
     val datePickerDialog = DatePickerDialog(
@@ -106,8 +107,7 @@ fun TugasDialog(
                             tugasData.dibuat = "$dayi/$monthi/$yeari"
                             tugasData.mapel = mapel
                             tugasData
-                        } else TugasData(
-                            id = Random().nextInt().unaryPlus(),
+                        } else TugasData(null,
                             status = Status.TODO,
                             judul = judul,
                             deskripsi = deskripsi,

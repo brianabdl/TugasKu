@@ -22,7 +22,7 @@ class AppSettings {
     val isChangedFlow: StateFlow<Boolean> = isChanged.asStateFlow()
 
     private val themeMode = MutableStateFlow(ThemeMode.AUTO)
-    val themeModeState: StateFlow<ThemeMode>
+    val themeModeFlow: StateFlow<ThemeMode>
         get() = themeMode.asStateFlow()
 
     fun setThemeMode(themeMode: ThemeMode) {
@@ -55,8 +55,7 @@ class AppSettings {
     suspend fun saveSettings(context: Context) {
         if (isChangedFlow.value) {
             context.dataStore.edit {
-                it[stringPreferencesKey(AppSettingsKey.KEY_THEME_MODE.key)] =
-                    themeMode.value.toString()
+                it[stringPreferencesKey(AppSettingsKey.KEY_THEME_MODE.key)] = themeMode.value.toString()
                 it[stringPreferencesKey(AppSettingsKey.KEY_LANGUAGE.key)] = locale.value.toString()
             }
             isChanged.emit(false)

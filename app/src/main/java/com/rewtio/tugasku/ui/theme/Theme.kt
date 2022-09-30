@@ -14,7 +14,7 @@ enum class ThemeMode {
 @Composable
 fun TugasKuTheme(content: @Composable () -> Unit) {
 
-    val theme by AppSettings.instance.themeModeState.collectAsState()
+    val theme by AppSettings.instance.themeModeFlow.collectAsState()
 
     val value = when (theme) {
         ThemeMode.DARK -> true

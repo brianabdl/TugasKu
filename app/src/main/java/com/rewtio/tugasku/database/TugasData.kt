@@ -1,4 +1,8 @@
-package com.rewtio.tugasku
+package com.rewtio.tugasku.database
+
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 enum class Status {
     COMPLETED,
@@ -7,8 +11,9 @@ enum class Status {
     TODO
 }
 
+@Entity(tableName = "tugas")
 data class TugasData(
-    val id: Int,
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val id: Long?,
     var status: Status,
     var judul: String,
     var mapel: String,

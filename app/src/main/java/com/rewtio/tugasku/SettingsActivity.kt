@@ -9,11 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,95 +26,90 @@ import com.rewtio.tugasku.ui.theme.TugasKuTheme
 import com.rewtio.tugasku.utils.LocaleUtils
 
 class SettingsActivity : ComponentActivity() {
-    private val appSettings = AppSettings.instance
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val appSettings = AppSettings.instance
+
         setContent {
             TugasKuTheme {
-                SettingsScreen(appSettings)
-            }
-        }
-    }
-}
-@Composable
-fun SettingsScreen(appSettings: AppSettings) {
-    val context = LocalContext.current
-    val isChanged by appSettings.isChangedFlow.collectAsState()
-    val theme by appSettings.themeModeState.collectAsState()
-    val language by appSettings.localeState.collectAsState()
+                val context = LocalContext.current
+                val isChanged by appSettings.isChangedFlow.collectAsState()
+                val theme by appSettings.themeModeFlow.collectAsState()
+                val language by appSettings.localeState.collectAsState()
 
-    LocaleUtils.SetLanguage(language)
+                LocaleUtils.SetLanguage(language)
 
-    LaunchedEffect(isChanged) {
-        if (isChanged) {
-            appSettings.saveSettings(context)
-        }
-    }
-
-    Scaffold(
-        topBar = {
-            SmallTopAppBar(
-                title = {
-                    Text(stringResource(R.string.settings))
-                },
-                navigationIcon = {
-                    IconButton(onClick = { (context as ComponentActivity).finish() }) {
-                        Icon(Icons.Filled.ArrowBack, "Back")
+                LaunchedEffect(isChanged) {
+                    if (isChanged) {
+                        appSettings.saveSettings(context)
                     }
                 }
-            )
-        }
-    ) { pad ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(pad)
-        ) {
-            Text(
-                text = stringResource(R.string.theme),
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-            )
 
-            SettingsItem(
-                title = stringResource(R.string.theme_mode),
-                icon = when (theme) {
-                    ThemeMode.AUTO -> {
-                        if (isSystemInDarkTheme()) {
-                            Icons.Outlined.DarkMode
-                        } else {
-                            Icons.Outlined.LightMode
-                        }
+                Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            title = {
+                                Text(stringResource(R.string.settings))
+                            },
+                            navigationIcon = {
+                                IconButton(onClick = { (context as ComponentActivity).finish() }) {
+                                    Icon(Icons.Filled.ArrowBack, "Back")
+                                }
+                            }
+                        )
                     }
-                    ThemeMode.DARK -> {
-                        Icons.Outlined.DarkMode
-                    }
-                    ThemeMode.LIGHT -> {
-                        Icons.Outlined.LightMode
-                    }
-                },
-                description = "This Mode will be applied to all the app",
-                items = listOf("Follow System", "Light Mode", "Dark Mode"),
-                onItemClick = {
-                    appSettings.setThemeMode(ThemeMode.values()[it])
-                }
-            )
+                ) { pad ->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(pad)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.theme),
+                            modifier = Modifier.padding(start = 16.dp, top = 16.dp)
+                        )
 
-            Text(
-                text = stringResource(R.string.language),
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-            )
+                        SettingsItem(
+                            title = stringResource(R.string.theme_mode),
+                            icon = when (theme) {
+                                ThemeMode.AUTO -> {
+                                    if (isSystemInDarkTheme()) {
+                                        Icons.Outlined.DarkMode
+                                    } else {
+                                        Icons.Outlined.LightMode
+                                    }
+                                }
+                                ThemeMode.DARK -> {
+                                    Icons.Outlined.DarkMode
+                                }
+                                ThemeMode.LIGHT -> {
+                                    Icons.Outlined.LightMode
+                                }
+                            },
+                            description = "This Mode will be applied to all the app",
+                            items = listOf("Follow System", "Light Mode", "Dark Mode"),
+                            onItemClick = {
+                                appSettings.setThemeMode(ThemeMode.values()[it])
+                            }
+                        )
 
-            SettingsItem(
-                title = stringResource(R.string.language),
-                icon = Icons.Filled.Language,
-                description = "Pilih bahasa yang ingin digunakan",
-                items = listOf("Default", "Indonesia", "English"),
-                onItemClick = {
-                    val lang = LocaleUtils.Language.getLang(it)
-                    appSettings.setLocale(lang)
-                }
-            )
+//            Text(
+//                text = stringResource(R.string.language),
+//                modifier = Modifier.padding(start = 16.dp, top = 16.dp)
+//            )
+//
+//            SettingsItem(
+//                title = stringResource(R.string.language),
+//                icon = Icons.Filled.Language,
+//                description = "Pilih bahasa yang ingin digunakan",
+//                items = listOf("Default", "Indonesia", "English"),
+//                onItemClick = {
+//                    val lang = LocaleUtils.Language.getLang(it)
+//                    appSettings.setLocale(lang)
+//                }
+//            )
 
 //            SettingsItem(
 //                title = stringResource(R.string.help_translate),
@@ -134,14 +127,9 @@ fun SettingsScreen(appSettings: AppSettings) {
 //                description = "Pilih versi pembaruan terbaru pada aplikasi",
 //                items = listOf("Stable", "Beta")
 //            )
+                    }
+                }
+            }
         }
     }
 }
-
-//@Preview(name = "Settings")
-//@Composable
-//fun SettingsPreview() {
-//    TugasKuTheme {
-//        SettingsScreen()
-//    }
-//}

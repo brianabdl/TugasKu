@@ -8,13 +8,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.rewtio.tugasku.Status
-import com.rewtio.tugasku.TugasData
+import com.rewtio.tugasku.database.Status
+import com.rewtio.tugasku.database.TugasData
 
 @Composable
 fun TugasCard(tugas: TugasData, onDelete: (TugasData) -> Unit, onEdit: (TugasData) -> Unit) {
@@ -37,8 +35,10 @@ fun TugasCard(tugas: TugasData, onDelete: (TugasData) -> Unit, onEdit: (TugasDat
             ){
                 Text(
                     text = tugas.judul,
-                    modifier = Modifier.align(Alignment.CenterVertically).weight(1F),
-                    fontSize = 24.sp,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .weight(1F),
+                    style = MaterialTheme.typography.titleLarge
                 )
 
                 IconButton(onClick = { expandMenu = !expandMenu }) {
@@ -56,8 +56,12 @@ fun TugasCard(tugas: TugasData, onDelete: (TugasData) -> Unit, onEdit: (TugasDat
                                 text = { Text(str) },
                                 onClick = {
                                     when (index) {
-                                        0 -> onEdit(tugas)
-                                        1 -> onDelete(tugas)
+                                        0 -> {
+                                            onEdit(tugas)
+                                        }
+                                        1 -> {
+                                            onDelete(tugas)
+                                        }
                                     }
                                     expandMenu = false
                                 }
@@ -68,19 +72,19 @@ fun TugasCard(tugas: TugasData, onDelete: (TugasData) -> Unit, onEdit: (TugasDat
             }
             Text(
                 text = "Mapel : ${tugas.mapel}",
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodyMedium
             )
             Text(
                 text = "Dibuat : ${tugas.dibuat}",
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodyMedium
             )
             Text(
                 text = "Deadline : ${tugas.deadline}",
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodyMedium
             )
             Text(
                 text = "Rincian : ${tugas.deskripsi}",
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }

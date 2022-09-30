@@ -23,8 +23,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.rewtio.tugasku.database.TugasData
+import com.rewtio.tugasku.database.TugasDatabase
 import com.rewtio.tugasku.preferences.AppSettings
 import com.rewtio.tugasku.ui.EditTugasDialog
 import com.rewtio.tugasku.ui.TambahTugasDialog
@@ -77,7 +77,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
-                        SmallTopAppBar(
+                        TopAppBar(
                             title = {
                                 Text(text = stringResource(R.string.app_name))
                             },
@@ -105,33 +105,21 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ) { pad ->
-                    val isRefreshing by vm.isRefreshing.collectAsState()
-                    val listTugas = remember { vm.listTugas }
-
-                    SwipeRefresh(
-                        swipeEnabled = true,
-                        state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
+                    val listTugas by vm.listTugas.collectAsState()
+                    Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(pad),
-                        onRefresh = {
-                            vm.refresh()
-                        }
+                            .padding(pad)
+                            .verticalScroll(rememberScrollState())
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(rememberScrollState())
-                        ) {
-                            listTugas.forEach { tugasData ->
-                                TugasCard(tugasData,
-                                    onDelete = { vm.deleteTugas(it) },
-                                    onEdit = {
-                                        curTugasData = tugasData
-                                        openEditDialog = true
-                                    }
-                                )
-                            }
+                        listTugas.forEach { tugasData ->
+                            TugasCard(tugasData,
+                                onDelete = { vm.deleteTugas(it) },
+                                onEdit = {
+                                    curTugasData = tugasData
+                                    openEditDialog = true
+                                }
+                            )
                         }
                     }
                 }
