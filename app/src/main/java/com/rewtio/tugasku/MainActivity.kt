@@ -24,7 +24,6 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rewtio.tugasku.database.TugasData
-import com.rewtio.tugasku.database.TugasDatabase
 import com.rewtio.tugasku.preferences.AppSettings
 import com.rewtio.tugasku.ui.EditTugasDialog
 import com.rewtio.tugasku.ui.TambahTugasDialog
