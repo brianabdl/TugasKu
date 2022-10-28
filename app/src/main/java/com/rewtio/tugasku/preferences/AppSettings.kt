@@ -3,14 +3,13 @@ package com.rewtio.tugasku.preferences
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.rewtio.tugasku.dataStore
 import com.rewtio.tugasku.ui.theme.ThemeMode
+import com.rewtio.tugasku.utils.DatabaseUtil.dataStore
 import com.rewtio.tugasku.utils.LocaleUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-
 
 class AppSettings {
     companion object {
@@ -61,9 +60,4 @@ class AppSettings {
             isChanged.emit(false)
         }
     }
-}
-
-sealed class AppSettingsKey(val key: String) {
-    object KEY_THEME_MODE : AppSettingsKey("themeMode")
-    object KEY_LANGUAGE : AppSettingsKey("language")
 }

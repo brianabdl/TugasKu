@@ -1,11 +1,13 @@
 package com.rewtio.tugasku.database
 
+
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TugasDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTugas(data: TugasData)
 
     @Delete
@@ -15,5 +17,5 @@ interface TugasDao {
     suspend fun updateTugas(data: TugasData)
 
     @Query("SELECT * FROM Tugas")
-    suspend fun getTugas(): List<TugasData>
+    fun getTugas(): Flow<List<TugasData>>
 }

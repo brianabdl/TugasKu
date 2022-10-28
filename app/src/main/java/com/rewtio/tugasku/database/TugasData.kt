@@ -13,7 +13,7 @@ enum class Status {
 
 @Entity(tableName = "tugas")
 data class TugasData(
-    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val id: Long?,
+    @PrimaryKey(autoGenerate = true) val id: Long?,
     var status: Status,
     var judul: String,
     var mapel: String,

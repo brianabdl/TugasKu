@@ -7,7 +7,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [TugasData::class], version = 1)
+@Database(entities = [TugasData::class], version = 2)
 abstract class TugasDatabase : RoomDatabase() {
     abstract fun tugasDao(): TugasDao
 
