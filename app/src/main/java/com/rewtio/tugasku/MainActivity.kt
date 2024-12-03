@@ -4,8 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -60,19 +58,13 @@ class MainActivity : ComponentActivity() {
                 var openEditDialog by remember { mutableStateOf(false) }
                 var curTugasData by remember { mutableStateOf(TugasData()) }
 
-                AnimatedVisibility(
-                    visible = openTambahDialog,
-                    exit = ExitTransition.None
-                ) {
+                if (openTambahDialog) {
                     TambahTugasDialog(
                         onAddTugas = { vm.addTugas(it) },
                         onDismissRequest = { openTambahDialog = false })
                 }
 
-                AnimatedVisibility(
-                    visible = openEditDialog,
-                    exit = ExitTransition.None
-                ) {
+                if (openEditDialog) {
                     EditTugasDialog(
                         curTugasData,
                         onSave = { vm.editTugas(it) },

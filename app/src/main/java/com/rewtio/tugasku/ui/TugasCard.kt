@@ -7,8 +7,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,21 +39,17 @@ fun TugasCard(
         elevation = CardDefaults.cardElevation(8.dp),
         modifier = modifier,
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-            ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = tugas.judul,
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .weight(1F),
+                    modifier = Modifier.align(Alignment.CenterVertically).weight(1F),
                     style = MaterialTheme.typography.titleLarge
                 )
 
-                IconButton(onClick = { expandMenu = !expandMenu }) {
+                IconButton(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                        onClick = { expandMenu = !expandMenu }) {
                     Icon(
                         Icons.Filled.MoreVert,
                         contentDescription = "Edit Menu"
@@ -55,7 +62,7 @@ fun TugasCard(
                         DropdownMenuItem(
                             text = { Text("Edit") },
                             onClick = {
-                                onEdit(tugas)
+                                onEdit(tugas.copy())
                                 expandMenu = false
                             }
                         )
