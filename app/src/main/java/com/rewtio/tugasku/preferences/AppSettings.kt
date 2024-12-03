@@ -11,11 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 
-class AppSettings {
-    companion object {
-        val instance: AppSettings by lazy { AppSettings() }
-    }
-
+object AppSettings {
     /*Some settings are changed and need to be saved to the database*/
     private var isChanged = MutableStateFlow(false)
     val isChangedFlow: StateFlow<Boolean> = isChanged.asStateFlow()

@@ -4,7 +4,9 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import com.rewtio.tugasku.preferences.AppSettings
 
 enum class ThemeMode {
@@ -14,7 +16,7 @@ enum class ThemeMode {
 @Composable
 fun TugasKuTheme(content: @Composable () -> Unit) {
 
-    val theme by AppSettings.instance.themeModeFlow.collectAsState()
+    val theme by AppSettings.themeModeFlow.collectAsState()
 
     val value = when (theme) {
         ThemeMode.DARK -> true

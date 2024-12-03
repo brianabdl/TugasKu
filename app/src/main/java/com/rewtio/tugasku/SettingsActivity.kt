@@ -8,10 +8,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.LightMode
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -30,20 +34,18 @@ class SettingsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val appSettings = AppSettings.instance
-
         setContent {
             TugasKuTheme {
                 val context = LocalContext.current
-                val isChanged by appSettings.isChangedFlow.collectAsState()
-                val theme by appSettings.themeModeFlow.collectAsState()
-                val language by appSettings.localeState.collectAsState()
+                val isChanged by AppSettings.isChangedFlow.collectAsState()
+                val theme by AppSettings.themeModeFlow.collectAsState()
+                val language by AppSettings.localeState.collectAsState()
 
                 LocaleUtils.SetLanguage(language)
 
                 LaunchedEffect(isChanged) {
                     if (isChanged) {
-                        appSettings.saveSettings(context)
+                        AppSettings.saveSettings(context)
                     }
                 }
 
@@ -55,7 +57,7 @@ class SettingsActivity : ComponentActivity() {
                             },
                             navigationIcon = {
                                 IconButton(onClick = { (context as ComponentActivity).finish() }) {
-                                    Icon(Icons.Filled.ArrowBack, "Back")
+                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
                                 }
                             }
                         )
@@ -91,7 +93,7 @@ class SettingsActivity : ComponentActivity() {
                             description = "This Mode will be applied to all the app",
                             items = listOf("Follow System", "Light Mode", "Dark Mode"),
                             onItemClick = {
-                                appSettings.setThemeMode(ThemeMode.values()[it])
+                                AppSettings.setThemeMode(ThemeMode.entries[it])
                             }
                         )
 
@@ -107,7 +109,7 @@ class SettingsActivity : ComponentActivity() {
 //                items = listOf("Default", "Indonesia", "English"),
 //                onItemClick = {
 //                    val lang = LocaleUtils.Language.getLang(it)
-//                    appSettings.setLocale(lang)
+//                    AppSettings.setLocale(lang)
 //                }
 //            )
 

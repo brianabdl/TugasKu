@@ -1,6 +1,5 @@
 package com.rewtio.tugasku.ui.viewmodel
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rewtio.tugasku.database.TugasData
